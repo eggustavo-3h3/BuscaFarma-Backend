@@ -19,7 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+//teste
 
 //builder.Services.AddAuthentication(JwtBearerDefauts.AuthenticationScheme).AddBearerToken(options =>
 //    {
