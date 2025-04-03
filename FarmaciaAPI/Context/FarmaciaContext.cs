@@ -13,7 +13,7 @@ namespace FarmaciaAPI.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            const string conexao = "server=localhost;database=etec;port=3306;uid=root";
+            const string conexao = "server=mysql.tccnapratica.com.br;database=tccnapratica10;port=3306;uid=tccnapratica10;password=Etec3h3";
             optionsBuilder.UseMySql(conexao, ServerVersion.AutoDetect(conexao));
             base.OnConfiguring(optionsBuilder);
         }
