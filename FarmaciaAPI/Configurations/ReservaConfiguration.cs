@@ -1,4 +1,5 @@
 ﻿using FarmaciaAPI.Domain;
+using FarmaciaAPI.Enumerators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,6 +23,10 @@ namespace FarmaciaAPI.Configurations
 
             builder.Property(r => r.Quantidade)
                 .IsRequired(false);
+
+            builder.Property(r => r.Status)
+                .HasDefaultValue(EnumStatusReserva.Pendente)
+                .IsRequired();
 
             builder.Property(r => r.RetiranteNome)
                 .HasMaxLength(100)

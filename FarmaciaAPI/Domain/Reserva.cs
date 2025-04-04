@@ -16,5 +16,6 @@ namespace FarmaciaAPI.Domain
         public string? RetiranteCpf { get; set; }
         public Usuario Usuario { get; set; }
         public Medicamento Medicamento { get; set; }
+        public EnumStatusReserva Status { get; set; }
     }
 }

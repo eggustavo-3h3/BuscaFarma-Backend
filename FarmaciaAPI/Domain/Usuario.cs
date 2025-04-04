@@ -1,4 +1,7 @@
-﻿namespace FarmaciaAPI.Domain
+﻿using FarmaciaAPI.Enumerators;
+using Microsoft.EntityFrameworkCore;
+
+namespace FarmaciaAPI.Domain
 {
     public class Usuario
     {
@@ -7,6 +10,7 @@
         public string CPF { get; set; } = string.Empty;
         public string Telefone { get; set; } = string.Empty;
         public string Senha { get; set; } = string.Empty;
+        public EnumTipoUsuario Tipo { get; set; }
 
     }
 }

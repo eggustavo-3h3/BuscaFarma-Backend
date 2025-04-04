@@ -1,4 +1,5 @@
 ﻿using FarmaciaAPI.Domain;
+using FarmaciaAPI.Enumerators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,6 +10,7 @@ namespace FarmaciaAPI.Configurations
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
             builder.HasKey(u => u.Id);
+            builder.HasIndex(u => u.CPF).IsUnique();
 
             builder.Property(u => u.Nome)
                 .HasMaxLength(100)
@@ -16,6 +18,10 @@ namespace FarmaciaAPI.Configurations
 
             builder.Property(u => u.CPF)
                 .HasMaxLength(20)
+                .IsRequired();
+
+            builder.Property(u => u.Tipo)
+                .HasDefaultValue(EnumTipoUsuario.Usuario)
                 .IsRequired();
 
             builder.Property(u => u.Telefone)
