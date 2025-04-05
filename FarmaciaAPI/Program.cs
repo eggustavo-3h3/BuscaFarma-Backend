@@ -62,7 +62,6 @@ builder.Services.AddSwaggerGen(config =>
 });
 
 
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(Options =>
     {
@@ -80,14 +79,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddCors();
+
 var app = builder.Build();
+
+app.UseAuthorization();
+app.MapControllers();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
+
+app.UseCors(x => x
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 #region Categoria
 
