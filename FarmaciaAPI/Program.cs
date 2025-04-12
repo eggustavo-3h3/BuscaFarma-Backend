@@ -1,11 +1,12 @@
-﻿using FarmaciaAPI.Data;
-using FarmaciaAPI.Domain;
-using FarmaciaAPI.DTOs.Base;
-using FarmaciaAPI.DTOs.Categorias;
-using FarmaciaAPI.DTOs.Login;
-using FarmaciaAPI.DTOs.Medicamento;
-using FarmaciaAPI.DTOs.Reserva;
-using FarmaciaAPI.DTOs.Usuario;
+﻿using FarmaciaAPI.Data.Context;
+using FarmaciaAPI.Domain.DTOs.Base;
+using FarmaciaAPI.Domain.DTOs.Categorias;
+using FarmaciaAPI.Domain.DTOs.Login;
+using FarmaciaAPI.Domain.DTOs.Medicamento;
+using FarmaciaAPI.Domain.DTOs.Reserva;
+using FarmaciaAPI.Domain.DTOs.Usuario;
+using FarmaciaAPI.Domain.Entities;
+using FarmaciaAPI.Domain.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -27,7 +28,7 @@ builder.Services.AddSwaggerGen(config =>
     {
         Title = "Busca Farma API",
         Version = "v1",
-        Description = "API para gerenciamento de eventos no Connect Matão"
+        Description = "API para gerenciamento de medicamentos da BuscaFarma"
     });
 
     config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -348,7 +349,7 @@ app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionar usua
         Nome = usuarioDto.Nome,
         CPF = usuarioDto.CPF,
         Telefone = usuarioDto.Telefone,
-        Senha = usuarioDto.Senha
+        Senha = usuarioDto.Senha.EncryptPassword()
     });
 
     context.SaveChanges();
@@ -419,7 +420,7 @@ app.MapDelete("usuario/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 app.MapPost("autenticar", (FarmaciaContext context, LoginDto loginDto) =>
 {
-    var usuario = context.UsuarioSet.FirstOrDefault(u => u.CPF == loginDto.Login && u.Senha == loginDto.Senha);
+    var usuario = context.UsuarioSet.FirstOrDefault(u => u.CPF == loginDto.Login && u.Senha == loginDto.Senha.EncryptPassword());
     if (usuario is null)
         return Results.BadRequest(new BaseResponse("Usuário e senha inválidos"));
     {
