@@ -100,6 +100,11 @@ app.UseCors(x => x
 
 app.MapPost("categoria/adicionar", (FarmaciaContext context, CategoriaAdicionarDto categoriaDto) =>
 {
+    var resultado = new CategoriaAdicionarDtoValidator().Validate(categoriaDto);
+
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
     context.CategoriaSet.Add(new Categoria
     {
         Id = Guid.NewGuid(),
@@ -338,7 +343,7 @@ app.MapDelete("reserva/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 #region Usuario
 
-app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionar usuarioDto) =>
+app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto usuarioDto) =>
 {
     if (usuarioDto.Senha != usuarioDto.ConfirmarSenha)
         return Results.BadRequest(new BaseResponse("As senhas não coincidem."));
@@ -383,7 +388,7 @@ app.MapGet("usuario/{id}", (FarmaciaContext context, Guid id) =>
 .RequireAuthorization()
 .WithTags("Usuario");
 
-app.MapPut("usuario/atualizar/{id}", (FarmaciaContext context, Guid id, UsuarioAtualizar usuarioDto) =>
+app.MapPut("usuario/atualizar/{id}", (FarmaciaContext context, Guid id, UsuarioAtualizarDto usuarioDto) =>
 {
     var usuario = context.UsuarioSet.FirstOrDefault(u => u.Id == id);
 

@@ -2,7 +2,7 @@
 
 namespace FarmaciaAPI.Domain.DTOs.Usuario
 {
-    public class UsuarioAdicionar
+    public class UsuarioAdicionarDto
     {
         public string Nome { get; set; } = string.Empty;
         public string CPF { get; set; } = string.Empty;

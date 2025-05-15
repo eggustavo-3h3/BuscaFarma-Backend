@@ -17,7 +17,7 @@ namespace FarmaciaAPI.Data.Configurations
                 .IsRequired();
 
             builder.Property(u => u.CPF)
-                .HasMaxLength(20)
+                .HasMaxLength(14)
                 .IsRequired();
 
             builder.Property(u => u.Tipo)
