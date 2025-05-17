@@ -10,7 +10,6 @@ namespace FarmaciaAPI.Domain.Entities
         public DateTime DataReserva { get; set; }
         public string ImagemReceita { get; set; } = string.Empty;
         public EnumTipoAtendimento EnumTipoAtendimento { get; set; } = EnumTipoAtendimento.NaoAtendida;
-        public int? Quantidade { get; set; }
         public DateTime? DataRetirada { get; set; }
         public string? RetiranteNome { get; set; }
         public string? RetiranteCpf { get; set; }

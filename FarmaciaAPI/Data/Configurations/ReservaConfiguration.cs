@@ -21,11 +21,8 @@ namespace FarmaciaAPI.Data.Configurations
             builder.Property(r => r.EnumTipoAtendimento)
                 .IsRequired();
 
-            builder.Property(r => r.Quantidade)
-                .IsRequired(false);
-
             builder.Property(r => r.Status)
-                .HasDefaultValue(EnumStatusReserva.Pendente)
+                .HasDefaultValue(EnumTipoAtendimento.NaoAtendida)
                 .IsRequired();
 
             builder.Property(r => r.RetiranteNome)

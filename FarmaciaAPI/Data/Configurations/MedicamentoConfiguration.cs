@@ -22,7 +22,7 @@ namespace FarmaciaAPI.Data.Configurations
                 .IsRequired();
 
             builder.Property(m => m.Descricao)
-                .HasColumnType("text") // Definindo como texto
+                .HasColumnType("text")
                 .IsRequired();
 
             builder.Property(m => m.UnidadeMedida)
