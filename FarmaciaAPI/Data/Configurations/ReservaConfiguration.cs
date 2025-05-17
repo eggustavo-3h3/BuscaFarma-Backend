@@ -22,7 +22,7 @@ namespace FarmaciaAPI.Data.Configurations
                 .IsRequired();
 
             builder.Property(r => r.Status)
-                .HasDefaultValue(EnumTipoAtendimento.NaoAtendida)
+                //.HasDefaultValue(EnumTipoAtendimento.NaoAtendida)
                 .IsRequired();
 
             builder.Property(r => r.RetiranteNome)

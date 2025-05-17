@@ -115,7 +115,7 @@ app.MapPost("categoria/adicionar", (FarmaciaContext context, CategoriaAdicionarD
 
     return Results.Created("Created", new BaseResponse("Categoria Registrada com Sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapGet("categoria/listar", (FarmaciaContext context) =>
@@ -127,7 +127,7 @@ app.MapGet("categoria/listar", (FarmaciaContext context) =>
 
     return Results.Ok(categorias);
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapGet("categoria/{id}", (FarmaciaContext context, Guid id) =>
@@ -139,7 +139,7 @@ app.MapGet("categoria/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(categoria);
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapPut("categoria/atualizar/{id}", (FarmaciaContext context, Guid id, CategoriaAdicionarDto categoriaDto) =>
@@ -155,7 +155,7 @@ app.MapPut("categoria/atualizar/{id}", (FarmaciaContext context, Guid id, Catego
 
     return Results.Ok(new BaseResponse("Categoria atualizada com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapDelete("categoria/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -170,7 +170,7 @@ app.MapDelete("categoria/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Categoria excluída com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Categoria");
 
 #endregion
@@ -187,14 +187,15 @@ app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicio
         Descricao = medicamentoDto.Descricao,
         TipoMedicamento = medicamentoDto.TipoMedicamento,
         UnidadeMedida = medicamentoDto.UnidadeMedida,
-        CategoriaId = medicamentoDto.CategoriaId
+        CategoriaId = medicamentoDto.CategoriaId,
+        Categoria =  medicamentoDto.Categoria
     });
 
     context.SaveChanges();
 
     return Results.Created("Created", new BaseResponse("Medicamento Registrado com Sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapGet("medicamento/listar", (FarmaciaContext context) =>
@@ -206,7 +207,7 @@ app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 
     return Results.Ok(medicamentos);
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapGet("medicamento/{id}", (FarmaciaContext context, Guid id) =>
@@ -218,7 +219,7 @@ app.MapGet("medicamento/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(medicamento);
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, MedicamentoAtualizar medicamentoDto) =>
@@ -239,7 +240,7 @@ app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, Medi
 
     return Results.Ok(new BaseResponse("Medicamento atualizado com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapDelete("medicamento/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -254,7 +255,7 @@ app.MapDelete("medicamento/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Medicamento excluído com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Medicamentos");
 
 #endregion
