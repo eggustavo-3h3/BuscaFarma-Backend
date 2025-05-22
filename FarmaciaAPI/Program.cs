@@ -8,6 +8,7 @@ using FarmaciaAPI.Domain.DTOs.Usuario;
 using FarmaciaAPI.Domain.Entities;
 using FarmaciaAPI.Domain.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -185,10 +186,10 @@ app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicio
         NomeComercial = medicamentoDto.NomeComercial,
         NomeQuimico = medicamentoDto.NomeQuimico,
         Descricao = medicamentoDto.Descricao,
+        Imagem = medicamentoDto.Imagem,
         TipoMedicamento = medicamentoDto.TipoMedicamento,
         UnidadeMedida = medicamentoDto.UnidadeMedida,
         CategoriaId = medicamentoDto.CategoriaId,
-        Categoria =  medicamentoDto.Categoria
     });
 
     context.SaveChanges();
@@ -200,7 +201,18 @@ app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicio
 
 app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 {
-    var medicamentos = context.MedicamentoSet.ToList();
+    var medicamentos = context.MedicamentoSet.Include(p => p.Categoria).Select(p => new MedicamentoListar
+    {
+        Id = p.Id,
+        Descricao = p.Descricao,
+        NomeComercial = p.NomeComercial,
+        NomeQuimico = p.NomeQuimico,
+        TipoMedicamento = p.TipoMedicamento,
+        UnidadeMedida = p.UnidadeMedida,
+        Imagem = p.Imagem,
+        CategoriaId = p.CategoriaId,
+        CategoriaDescricao = p.Categoria.Descricao        
+    }).ToList();
 
     if (medicamentos.Count == 0)
         return Results.NotFound(new BaseResponse("Nenhum medicamento encontrado."));
@@ -212,12 +224,25 @@ app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 
 app.MapGet("medicamento/{id}", (FarmaciaContext context, Guid id) =>
 {
-    var medicamento = context.MedicamentoSet.FirstOrDefault(m => m.Id == id);
+    var medicamento = context.MedicamentoSet.Include(p => p.Categoria).FirstOrDefault(m => m.Id == id);
 
     if (medicamento == null)
         return Results.NotFound(new BaseResponse("Medicamento não encontrado."));
 
-    return Results.Ok(medicamento);
+    var medicamentoDto = new MedicamentoObter
+    {
+        Id = medicamento.Id,
+        Descricao = medicamento.Descricao,
+        NomeComercial = medicamento.NomeComercial,
+        NomeQuimico = medicamento.NomeQuimico,
+        TipoMedicamento = medicamento.TipoMedicamento,
+        UnidadeMedida = medicamento.UnidadeMedida,
+        Imagem = medicamento.Imagem,
+        CategoriaId = medicamento.CategoriaId,
+        CategoriaDescricao = medicamento.Categoria.Descricao
+    };
+
+    return Results.Ok(medicamentoDto);
 })
 //.RequireAuthorization()
 .WithTags("Medicamentos");
