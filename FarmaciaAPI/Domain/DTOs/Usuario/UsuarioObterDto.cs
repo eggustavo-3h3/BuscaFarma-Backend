@@ -2,7 +2,7 @@
 
 namespace FarmaciaAPI.Domain.DTOs.Usuario
 {
-    public class UsuarioAtualizarDto
+    public class UsuarioObterDto
     {
         public Guid Id { get; set; }
         public string Nome { get; set; } = string.Empty;

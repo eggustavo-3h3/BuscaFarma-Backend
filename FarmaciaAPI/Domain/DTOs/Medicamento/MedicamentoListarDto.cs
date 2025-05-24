@@ -2,7 +2,7 @@
 
 namespace FarmaciaAPI.Domain.DTOs.Medicamento
 {
-    public class MedicamentoListar
+    public class MedicamentoListarDto
     {
         public Guid Id { get; set; }
         public string NomeComercial { get; set; } = string.Empty;

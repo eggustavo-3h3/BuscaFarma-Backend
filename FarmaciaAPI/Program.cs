@@ -1,4 +1,5 @@
 ﻿using FarmaciaAPI.Data.Context;
+using FarmaciaAPI.Data.Util;
 using FarmaciaAPI.Domain.DTOs.Base;
 using FarmaciaAPI.Domain.DTOs.Categorias;
 using FarmaciaAPI.Domain.DTOs.Login;
@@ -6,6 +7,7 @@ using FarmaciaAPI.Domain.DTOs.Medicamento;
 using FarmaciaAPI.Domain.DTOs.Reserva;
 using FarmaciaAPI.Domain.DTOs.Usuario;
 using FarmaciaAPI.Domain.Entities;
+using FarmaciaAPI.Domain.Enumerators;
 using FarmaciaAPI.Domain.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -121,12 +123,16 @@ app.MapPost("categoria/adicionar", (FarmaciaContext context, CategoriaAdicionarD
 
 app.MapGet("categoria/listar", (FarmaciaContext context) =>
 {
-    var categorias = context.CategoriaSet.ToList();
+    var categoria = context.CategoriaSet.Select(c => new CategoriaListarDto
+    {
+        Id = c.Id,
+        Descricao = c.Descricao
+    }).ToList();
 
-    if (categorias.Count == 0)
-        return Results.NotFound(new BaseResponse("Nenhuma categoria encontrada."));
+    if (categoria.Count == 0)
+        return Results.NotFound(new BaseResponse("Nenhum medicamento encontrado."));
 
-    return Results.Ok(categorias);
+    return Results.Ok(categoria);
 })
 //.RequireAuthorization()
 .WithTags("Categoria");
@@ -178,7 +184,7 @@ app.MapDelete("categoria/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 #region Medicamentos
 
-app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicionar medicamentoDto) =>
+app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicionarDto medicamentoDto) =>
 {
     context.MedicamentoSet.Add(new Medicamento
     {
@@ -201,7 +207,7 @@ app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicio
 
 app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 {
-    var medicamentos = context.MedicamentoSet.Include(p => p.Categoria).Select(p => new MedicamentoListar
+    var medicamentos = context.MedicamentoSet.Include(p => p.Categoria).Select(p => new MedicamentoListarDto
     {
         Id = p.Id,
         Descricao = p.Descricao,
@@ -211,7 +217,7 @@ app.MapGet("medicamento/listar", (FarmaciaContext context) =>
         UnidadeMedida = p.UnidadeMedida,
         Imagem = p.Imagem,
         CategoriaId = p.CategoriaId,
-        CategoriaDescricao = p.Categoria.Descricao        
+        CategoriaDescricao = p.Categoria.Descricao
     }).ToList();
 
     if (medicamentos.Count == 0)
@@ -224,30 +230,17 @@ app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 
 app.MapGet("medicamento/{id}", (FarmaciaContext context, Guid id) =>
 {
-    var medicamento = context.MedicamentoSet.Include(p => p.Categoria).FirstOrDefault(m => m.Id == id);
+    var medicamento = SelectUtil.ObterMedicamento(context, id);
 
     if (medicamento == null)
         return Results.NotFound(new BaseResponse("Medicamento não encontrado."));
 
-    var medicamentoDto = new MedicamentoObter
-    {
-        Id = medicamento.Id,
-        Descricao = medicamento.Descricao,
-        NomeComercial = medicamento.NomeComercial,
-        NomeQuimico = medicamento.NomeQuimico,
-        TipoMedicamento = medicamento.TipoMedicamento,
-        UnidadeMedida = medicamento.UnidadeMedida,
-        Imagem = medicamento.Imagem,
-        CategoriaId = medicamento.CategoriaId,
-        CategoriaDescricao = medicamento.Categoria.Descricao
-    };
-
-    return Results.Ok(medicamentoDto);
+    return Results.Ok(medicamento);
 })
 //.RequireAuthorization()
 .WithTags("Medicamentos");
 
-app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, MedicamentoAtualizar medicamentoDto) =>
+app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, MedicamentoAtualizarDto medicamentoDto) =>
 {
     var medicamento = context.MedicamentoSet.FirstOrDefault(m => m.Id == id);
 
@@ -287,7 +280,7 @@ app.MapDelete("medicamento/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 #region Reserva
 
-app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionar reservaDto) =>
+app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionarDto reservaDto) =>
 {
     context.ReservaSet.Add(new Reserva
     {
@@ -303,19 +296,37 @@ app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionar rese
 
     return Results.Created("Created", new BaseResponse("Reserva registrada com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Reserva");
 
 app.MapGet("reserva/listar", (FarmaciaContext context) =>
 {
-    var reservas = context.ReservaSet.ToList();
+    var reservas = context.ReservaSet
+    .Include(p => p.Usuario)
+    .Include(p => p.Medicamento)
+    .ToList()
+    .Select(p => new ReservaListarDto
+    {
+        Id = p.Id,
+        UsuarioId = p.UsuarioId,
+        MedicamentoId = p.MedicamentoId,
+        DataReserva = p.DataReserva,
+        ImagemReceita = p.ImagemReceita,
+        EnumTipoAtendimento = p.EnumTipoAtendimento,
+        Status = p.Status,
+        DataRetirada = p.DataRetirada,
+        RetiranteNome = p.RetiranteNome,
+        RetiranteCpf = p.RetiranteCpf,
+        Usuario = SelectUtil.ObterUsuario(context, p.UsuarioId),
+        Medicamento = SelectUtil.ObterMedicamento(context, p.MedicamentoId)
+    }).ToList();
 
     if (reservas.Count == 0)
         return Results.NotFound(new BaseResponse("Nenhuma reserva encontrada."));
 
     return Results.Ok(reservas);
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Reserva");
 
 app.MapGet("reserva/{id}", (FarmaciaContext context, Guid id) =>
@@ -327,10 +338,10 @@ app.MapGet("reserva/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(reserva);
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Reserva");
 
-app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaAtualizar reservaDto) =>
+app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaAtualizarDto reservaDto) =>
 {
     var reserva = context.ReservaSet.FirstOrDefault(r => r.Id == id);
 
@@ -347,7 +358,7 @@ app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaA
 
     return Results.Ok(new BaseResponse("Reserva atualizada com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Reserva");
 
 app.MapDelete("reserva/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -362,7 +373,7 @@ app.MapDelete("reserva/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Reserva excluída com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Reserva");
 
 #endregion
@@ -392,17 +403,25 @@ app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto u
 
 app.MapGet("usuario/listar", (FarmaciaContext context) =>
 {
-    var usuarios = context.UsuarioSet.ToList();
+    var usuario = context.UsuarioSet.Select(u => new UsuarioListarDto
+    {
+        Id = u.Id,
+        Nome = u.Nome,
+        CPF = u.CPF,
+        Telefone = u.Telefone,
+        Tipo = u.Tipo
+    }).ToList();
 
-    if (usuarios.Count == 0)
-        return Results.NotFound(new BaseResponse("Nenhum usuário encontrado."));
+    if (usuario.Count == 0)
+        return Results.NotFound(new BaseResponse("Nenhum medicamento encontrado."));
 
-    return Results.Ok(usuarios);
+    return Results.Ok(usuario);
+
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Usuario");
 
-app.MapGet("usuario/{id}", (FarmaciaContext context, Guid id) =>
+app.MapGet("usuario/id/{id}", (FarmaciaContext context, Guid id) =>
 {
     var usuario = context.UsuarioSet.FirstOrDefault(u => u.Id == id);
 
@@ -411,7 +430,19 @@ app.MapGet("usuario/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(usuario);
 })
-.RequireAuthorization()
+//.RequireAuthorization()
+.WithTags("Usuario");
+
+app.MapGet("usuario/cpf/{cpf}", (FarmaciaContext context, string cpf) =>
+{
+    var usuario = context.UsuarioSet.FirstOrDefault(u => u.CPF == cpf);
+
+    if (usuario == null)
+        return Results.NotFound(new BaseResponse("Usuário não encontrado."));
+
+    return Results.Ok(usuario);
+})
+//.RequireAuthorization()
 .WithTags("Usuario");
 
 app.MapPut("usuario/atualizar/{id}", (FarmaciaContext context, Guid id, UsuarioAtualizarDto usuarioDto) =>
@@ -425,11 +456,11 @@ app.MapPut("usuario/atualizar/{id}", (FarmaciaContext context, Guid id, UsuarioA
     usuario.CPF = usuarioDto.CPF;
     usuario.Telefone = usuarioDto.Telefone;
 
-    context.SaveChanges();
+context.SaveChanges();
 
     return Results.Ok(new BaseResponse("Usuário atualizado com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Usuario");
 
 app.MapDelete("usuario/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -444,7 +475,7 @@ app.MapDelete("usuario/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Usuário excluído com sucesso!"));
 })
-.RequireAuthorization()
+//.RequireAuthorization()
 .WithTags("Usuario");
 
 #endregion
