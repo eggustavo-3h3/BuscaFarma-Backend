@@ -1,8 +1,10 @@
-﻿using FarmaciaAPI.Domain.Enumerators;
+﻿using FarmaciaAPI.Domain.DTOs.Medicamento;
+using FarmaciaAPI.Domain.DTOs.Usuario;
+using FarmaciaAPI.Domain.Enumerators;
 
 namespace FarmaciaAPI.Domain.DTOs.Reserva
 {
-    public class ReservaObterDto
+    public class ReservaChamarDto
     {
         public Guid Id { get; set; }
         public Guid UsuarioId { get; set; }
@@ -11,10 +13,10 @@ namespace FarmaciaAPI.Domain.DTOs.Reserva
         public string ImagemReceita { get; set; } = string.Empty;
         public EnumTipoAtendimento EnumTipoAtendimento { get; set; }
         public EnumStatusReserva Status { get; set; }
-        public DateTime DataRetirada { get; set; }
-        public Guid RetiranteNome { get; set; }
-        public Guid RetiranteCpf { get; set; }
-        public string Usuario { get; set; }
-        public string Medicamento { get; set; }
+        public DateTime? DataRetirada { get; set; }
+        public string? RetiranteNome { get; set; }
+        public string RetiranteCpf { get; set; }
+        public UsuarioObterDto? Usuario { get; set; }
+        public MedicamentoObterDto? Medicamento { get; set; }
     }
 }

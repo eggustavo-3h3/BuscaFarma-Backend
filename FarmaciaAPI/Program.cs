@@ -331,15 +331,66 @@ app.MapGet("reserva/listar", (FarmaciaContext context) =>
 
 app.MapGet("reserva/{id}", (FarmaciaContext context, Guid id) =>
 {
-    var reserva = context.ReservaSet.FirstOrDefault(r => r.Id == id);
+    var reservas = context.ReservaSet
+    .Include(r => r.Usuario)
+    .Include(r => r.Medicamento)
+    .ToList()
+    .Where(r => r.Id == id)
+    .Select(r => new ReservaChamarDto
+    {
+        Id = r.Id,
+        UsuarioId = r.UsuarioId,
+        MedicamentoId = r.MedicamentoId,
+        DataReserva = r.DataReserva,
+        ImagemReceita = r.ImagemReceita,
+        EnumTipoAtendimento = r.EnumTipoAtendimento,
+        Status = r.Status,
+        DataRetirada = r.DataRetirada,
+        RetiranteNome = r.RetiranteNome,
+        RetiranteCpf = r.RetiranteCpf,
+        Usuario = SelectUtil.ObterUsuario(context, r.UsuarioId),
+        Medicamento = SelectUtil.ObterMedicamento(context, r.MedicamentoId)
+    }).ToList();
 
-    if (reserva == null)
+    if (reservas.Count == 0)
         return Results.NotFound(new BaseResponse("Reserva não encontrada."));
 
-    return Results.Ok(reserva);
+    return Results.Ok(reservas);
 })
 //.RequireAuthorization()
 .WithTags("Reserva");
+
+app.MapGet("reserva/usuario/{usuarioId}", (FarmaciaContext context, Guid usuarioId) =>
+{
+    var reservas = context.ReservaSet
+    .Include(r => r.Usuario)
+    .Include(r => r.Medicamento)
+    .ToList()
+    .Where(r => r.UsuarioId == usuarioId)
+    .Select(r => new ReservaChamarDto
+    {
+        Id = r.Id,
+        UsuarioId = r.UsuarioId,
+        MedicamentoId = r.MedicamentoId,
+        DataReserva = r.DataReserva,
+        ImagemReceita = r.ImagemReceita,
+        EnumTipoAtendimento = r.EnumTipoAtendimento,
+        Status = r.Status,
+        DataRetirada = r.DataRetirada,
+        RetiranteNome = r.RetiranteNome,
+        RetiranteCpf = r.RetiranteCpf,
+        Usuario = SelectUtil.ObterUsuario(context, r.UsuarioId),
+        Medicamento = SelectUtil.ObterMedicamento(context, r.MedicamentoId)
+    }).ToList();
+
+    if (reservas.Count == 0)
+        return Results.NotFound(new BaseResponse("Nenhuma reserva encontrada para este usuário."));
+
+    return Results.Ok(reservas);
+})
+//.RequireAuthorization()
+.WithTags("Reserva");
+
 
 app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaAtualizarDto reservaDto) =>
 {
