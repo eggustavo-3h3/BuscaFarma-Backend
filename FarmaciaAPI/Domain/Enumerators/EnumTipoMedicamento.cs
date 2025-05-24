@@ -2,7 +2,7 @@
 {
     public enum EnumTipoMedicamento
     {
-        AutoCusto = 1,
-        Comum = 2
+        Comum = 1,
+        AutoCusto = 2
     }
 }

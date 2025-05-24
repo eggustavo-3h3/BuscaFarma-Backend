@@ -11,7 +11,7 @@ namespace FarmaciaAPI.Data.Util
 
         public static MedicamentoObterDto? ObterMedicamento(FarmaciaContext context, Guid id)
         {
-            var medicamento = context.MedicamentoSet.Include(p => p.Categoria).FirstOrDefault(m => m.Id == id);
+            var medicamento = context.MedicamentoSet.Include(M => M.Categoria).FirstOrDefault(m => m.Id == id);
 
             if (medicamento == null)
                 return null;
@@ -23,6 +23,7 @@ namespace FarmaciaAPI.Data.Util
                 NomeComercial = medicamento.NomeComercial,
                 NomeQuimico = medicamento.NomeQuimico,
                 TipoMedicamento = medicamento.TipoMedicamento,
+                Quantidade = medicamento.Quantidade,
                 UnidadeMedida = medicamento.UnidadeMedida,
                 Imagem = medicamento.Imagem,
                 CategoriaId = medicamento.CategoriaId,

@@ -194,6 +194,7 @@ app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicio
         Descricao = medicamentoDto.Descricao,
         Imagem = medicamentoDto.Imagem,
         TipoMedicamento = medicamentoDto.TipoMedicamento,
+        Quantidade = medicamentoDto.Quantidade,
         UnidadeMedida = medicamentoDto.UnidadeMedida,
         CategoriaId = medicamentoDto.CategoriaId,
     });
@@ -207,17 +208,18 @@ app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicio
 
 app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 {
-    var medicamentos = context.MedicamentoSet.Include(p => p.Categoria).Select(p => new MedicamentoListarDto
+    var medicamentos = context.MedicamentoSet.Include(m => m.Categoria).Select(m => new MedicamentoListarDto
     {
-        Id = p.Id,
-        Descricao = p.Descricao,
-        NomeComercial = p.NomeComercial,
-        NomeQuimico = p.NomeQuimico,
-        TipoMedicamento = p.TipoMedicamento,
-        UnidadeMedida = p.UnidadeMedida,
-        Imagem = p.Imagem,
-        CategoriaId = p.CategoriaId,
-        CategoriaDescricao = p.Categoria.Descricao
+        Id = m.Id,
+        Descricao = m.Descricao,
+        NomeComercial = m.NomeComercial,
+        NomeQuimico = m.NomeQuimico,
+        TipoMedicamento = m.TipoMedicamento,
+        Quantidade = m.Quantidade,
+        UnidadeMedida = m.UnidadeMedida,
+        Imagem = m.Imagem,
+        CategoriaId = m.CategoriaId,
+        CategoriaDescricao = m.Categoria.Descricao
     }).ToList();
 
     if (medicamentos.Count == 0)
@@ -250,6 +252,7 @@ app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, Medi
     medicamento.NomeComercial = medicamentoDto.NomeComercial;
     medicamento.NomeQuimico = medicamentoDto.NomeQuimico;
     medicamento.Descricao = medicamentoDto.Descricao;
+    medicamento.Quantidade = medicamentoDto.Quantidade;
     medicamento.TipoMedicamento = medicamentoDto.TipoMedicamento;
     medicamento.UnidadeMedida = medicamentoDto.UnidadeMedida;
     medicamento.CategoriaId = medicamentoDto.CategoriaId;
