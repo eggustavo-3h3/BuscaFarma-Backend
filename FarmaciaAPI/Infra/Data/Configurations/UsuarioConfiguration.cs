@@ -3,7 +3,7 @@ using FarmaciaAPI.Domain.Enumerators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FarmaciaAPI.Data.Configurations
+namespace FarmaciaAPI.Infra.Data.Configurations
 {
     public class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
     {
@@ -31,6 +31,13 @@ namespace FarmaciaAPI.Data.Configurations
             builder.Property(u => u.Senha)
                 .HasMaxLength(250)
                 .IsRequired();
+
+            builder.Property(u => u.Email)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            builder.Property(u => u.ChaveResetSenha)
+                .IsRequired(false);
 
             builder.ToTable("TB_Usuario");
         }

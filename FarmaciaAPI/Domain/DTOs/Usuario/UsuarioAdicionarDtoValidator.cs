@@ -22,6 +22,10 @@ namespace FarmaciaAPI.Domain.DTOs.Usuario
 
             RuleFor(x => x.ConfirmarSenha)
                 .Equal(x => x.Senha).WithMessage("As senhas não coincidem.");
+
+            RuleFor(x => x.Email)
+                .EmailAddress().WithMessage("O Formato do Email está inválido")
+                .NotEmpty().WithMessage("Email é obrigatório");
         }
     }
 }

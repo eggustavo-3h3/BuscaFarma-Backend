@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FarmaciaAPI.Migrations
 {
     [DbContext(typeof(FarmaciaContext))]
-    [Migration("20250404005623_Melhorias")]
-    partial class Melhorias
+    [Migration("20250526025658_ResetSenha")]
+    partial class ResetSenha
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace FarmaciaAPI.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.Categoria", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.Categoria", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace FarmaciaAPI.Migrations
                     b.ToTable("TB_Categoria", (string)null);
                 });
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.Medicamento", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.Medicamento", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,6 +68,10 @@ namespace FarmaciaAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<string>("Quantidade")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("TipoMedicamento")
                         .HasColumnType("int");
 
@@ -81,7 +85,7 @@ namespace FarmaciaAPI.Migrations
                     b.ToTable("TB_Medicamento", (string)null);
                 });
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.MedicamentoEntrada", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.MedicamentoEntrada", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -103,7 +107,7 @@ namespace FarmaciaAPI.Migrations
                     b.ToTable("TB_MedicamentoEntrada", (string)null);
                 });
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.Reserva", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.Reserva", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -124,9 +128,6 @@ namespace FarmaciaAPI.Migrations
 
                     b.Property<Guid>("MedicamentoId")
                         .HasColumnType("char(36)");
-
-                    b.Property<int?>("Quantidade")
-                        .HasColumnType("int");
 
                     b.Property<string>("RetiranteCpf")
                         .HasMaxLength(20)
@@ -151,7 +152,7 @@ namespace FarmaciaAPI.Migrations
                     b.ToTable("TB_Reserva", (string)null);
                 });
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.Usuario", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -159,8 +160,16 @@ namespace FarmaciaAPI.Migrations
 
                     b.Property<string>("CPF")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                        .HasMaxLength(14)
+                        .HasColumnType("varchar(14)");
+
+                    b.Property<Guid?>("ChaveResetSenha")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -177,14 +186,22 @@ namespace FarmaciaAPI.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
+                    b.Property<int>("Tipo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CPF")
+                        .IsUnique();
 
                     b.ToTable("TB_Usuario", (string)null);
                 });
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.Medicamento", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.Medicamento", b =>
                 {
-                    b.HasOne("FarmaciaAPI.Domain.Categoria", "Categoria")
+                    b.HasOne("FarmaciaAPI.Domain.Entities.Categoria", "Categoria")
                         .WithMany()
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -193,9 +210,9 @@ namespace FarmaciaAPI.Migrations
                     b.Navigation("Categoria");
                 });
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.MedicamentoEntrada", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.MedicamentoEntrada", b =>
                 {
-                    b.HasOne("FarmaciaAPI.Domain.Medicamento", "Medicamento")
+                    b.HasOne("FarmaciaAPI.Domain.Entities.Medicamento", "Medicamento")
                         .WithMany()
                         .HasForeignKey("MedicamentoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -204,15 +221,15 @@ namespace FarmaciaAPI.Migrations
                     b.Navigation("Medicamento");
                 });
 
-            modelBuilder.Entity("FarmaciaAPI.Domain.Reserva", b =>
+            modelBuilder.Entity("FarmaciaAPI.Domain.Entities.Reserva", b =>
                 {
-                    b.HasOne("FarmaciaAPI.Domain.Medicamento", "Medicamento")
+                    b.HasOne("FarmaciaAPI.Domain.Entities.Medicamento", "Medicamento")
                         .WithMany()
                         .HasForeignKey("MedicamentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FarmaciaAPI.Domain.Usuario", "Usuario")
+                    b.HasOne("FarmaciaAPI.Domain.Entities.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)

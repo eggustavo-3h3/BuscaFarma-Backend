@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FarmaciaAPI.Domain.Entities;
 
-namespace FarmaciaAPI.Data.Context
+namespace FarmaciaAPI.Infra.Data.Context
 {
     public class FarmaciaContext : DbContext
     {

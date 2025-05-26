@@ -3,7 +3,7 @@ using FarmaciaAPI.Domain.Enumerators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FarmaciaAPI.Data.Configurations
+namespace FarmaciaAPI.Infra.Data.Configurations
 {
     public class ReservaConfiguration : IEntityTypeConfiguration<Reserva>
     {

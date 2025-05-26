@@ -1,14 +1,16 @@
-﻿using FarmaciaAPI.Data.Context;
-using FarmaciaAPI.Data.Util;
+﻿using FarmaciaAPI.Domain.DTOs.AlterarSenha;
 using FarmaciaAPI.Domain.DTOs.Base;
 using FarmaciaAPI.Domain.DTOs.Categorias;
 using FarmaciaAPI.Domain.DTOs.Login;
 using FarmaciaAPI.Domain.DTOs.Medicamento;
 using FarmaciaAPI.Domain.DTOs.Reserva;
+using FarmaciaAPI.Domain.DTOs.ResetSenha;
 using FarmaciaAPI.Domain.DTOs.Usuario;
 using FarmaciaAPI.Domain.Entities;
 using FarmaciaAPI.Domain.Enumerators;
 using FarmaciaAPI.Domain.Extensions;
+using FarmaciaAPI.Infra.Data.Context;
+using FarmaciaAPI.Infra.Data.Util;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +18,7 @@ using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FarmaciaAPI.Infra.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,11 +86,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Backoffice", policy => policy.RequireRole("Backoffice"));
+    options.AddPolicy("Usuario", policy => policy.RequireRole("Usuario", "Backoffice"));
+});
+
 builder.Services.AddCors();
 
 var app = builder.Build();
 
-app.UseAuthorization();
 app.MapControllers();
 
 app.UseSwagger();
@@ -445,7 +453,8 @@ app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto u
         Nome = usuarioDto.Nome,
         CPF = usuarioDto.CPF,
         Telefone = usuarioDto.Telefone,
-        Senha = usuarioDto.Senha.EncryptPassword()
+        Senha = usuarioDto.Senha.EncryptPassword(),
+        Email = usuarioDto.Email,
     });
 
     context.SaveChanges();
@@ -534,6 +543,8 @@ app.MapDelete("usuario/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 #endregion
 
+#region Segurança
+
 app.MapPost("autenticar", (FarmaciaContext context, LoginDto loginDto) =>
 {
     var usuario = context.UsuarioSet.FirstOrDefault(u => u.CPF == loginDto.Login && u.Senha == loginDto.Senha.EncryptPassword());
@@ -542,10 +553,11 @@ app.MapPost("autenticar", (FarmaciaContext context, LoginDto loginDto) =>
     {
         var claims = new[]
         {
+            new Claim("Id", usuario.Id.ToString()),
             new Claim("Nome", usuario.Nome),
             new Claim("Telefone", usuario.Telefone),
+            new Claim(ClaimTypes.Role, usuario.Tipo.ToString())
         };
-
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes("{1058fc1c-b172-4b72-a684-f51febdb2631}"));
@@ -563,8 +575,73 @@ app.MapPost("autenticar", (FarmaciaContext context, LoginDto loginDto) =>
         return Results.Ok(
             new JwtSecurityTokenHandler().WriteToken(token));
     }
-
 })
-.WithTags("Autenticador");
+.WithTags("Segurança");
+
+app.MapPost("gerar-chave-reset-senha", (FarmaciaContext context, GerarResetSenhaDto gerarResetSenhaDto) =>
+{
+    var resultado = new GerarResetSenhaDtoValidator().Validate(gerarResetSenhaDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
+    var usuario = context.UsuarioSet.FirstOrDefault(p => p.Email == gerarResetSenhaDto.Email);
+
+    if (usuario is not null)
+    {
+        usuario.ChaveResetSenha = Guid.NewGuid();
+        context.UsuarioSet.Update(usuario);
+        context.SaveChanges();
+
+        var emailService = new EmailService();
+        var enviarEmailResponse = emailService.EnviarEmail(gerarResetSenhaDto.Email, "Reset de Senha", $"https://url-front/reset-senha/{usuario.ChaveResetSenha}", true);
+        if (!enviarEmailResponse.Sucesso)
+            return Results.BadRequest(new BaseResponse("Erro ao enviar o e-mail: " + enviarEmailResponse.Mensagem));
+    }
+
+    return Results.Ok(new BaseResponse("Se o e-mail informado estiver correto, você receberá as instruções por e-mail."));
+}).WithTags("Segurança");
+
+app.MapPut("resetar-senha", (FarmaciaContext context, ResetSenhaDto resetSenhaDto) =>
+{
+    var resultado = new ResetSenhaDtoValidator().Validate(resetSenhaDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
+    var startup = context.UsuarioSet.FirstOrDefault(p => p.ChaveResetSenha == resetSenhaDto.ChaveResetSenha);
+
+    if (startup is null)
+        return Results.BadRequest(new BaseResponse("Chave de reset de senha inválida."));
+
+    startup.Senha = resetSenhaDto.NovaSenha.EncryptPassword();
+    startup.ChaveResetSenha = null;
+    context.UsuarioSet.Update(startup);
+    context.SaveChanges();
+
+    return Results.Ok(new BaseResponse("Senha alterada com sucesso."));
+}).WithTags("Segurança");
+
+app.MapPut("alterar-senha", (FarmaciaContext context, ClaimsPrincipal claims, AlterarSenhaDto alterarSenhaDto) =>
+{
+    var resultado = new AlterarSenhaDtoValidator().Validate(alterarSenhaDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
+    var userIdClaim = claims.FindFirst("Id")?.Value;
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    var userId = Guid.Parse(userIdClaim);
+    var startup = context.UsuarioSet.FirstOrDefault(p => p.Id == userId);
+    if (startup == null)
+        return Results.NotFound(new BaseResponse("Usuário não encontrado."));
+
+    startup.Senha = alterarSenhaDto.NovaSenha.EncryptPassword();
+    context.UsuarioSet.Update(startup);
+    context.SaveChanges();
+
+    return Results.Ok(new BaseResponse("Senha alterada com sucesso."));
+}).WithTags("Segurança");
+
+#endregion
 
 app.Run();

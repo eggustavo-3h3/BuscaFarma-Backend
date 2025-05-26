@@ -1,10 +1,10 @@
-﻿using FarmaciaAPI.Data.Context;
-using FarmaciaAPI.Domain.DTOs.Base;
+﻿using FarmaciaAPI.Domain.DTOs.Base;
 using FarmaciaAPI.Domain.DTOs.Medicamento;
 using FarmaciaAPI.Domain.DTOs.Usuario;
+using FarmaciaAPI.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace FarmaciaAPI.Data.Util
+namespace FarmaciaAPI.Infra.Data.Util
 {
     public static class SelectUtil
     {
