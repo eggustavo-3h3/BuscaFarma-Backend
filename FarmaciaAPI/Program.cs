@@ -19,6 +19,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using FarmaciaAPI.Infra.Email;
+using FarmaciaAPI.Domain.Validators.Medicamento;
+using FarmaciaAPI.Domain.Validators.Reserva;
+using FarmaciaAPI.Domain.Validators.Usuario;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,7 +115,6 @@ app.UseCors(x => x
 app.MapPost("categoria/adicionar", (FarmaciaContext context, CategoriaAdicionarDto categoriaDto) =>
 {
     var resultado = new CategoriaAdicionarDtoValidator().Validate(categoriaDto);
-
     if (!resultado.IsValid)
         return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
 
@@ -161,6 +163,10 @@ app.MapPut("categoria/atualizar/{id}", (FarmaciaContext context, Guid id, Catego
 {
     var categoria = context.CategoriaSet.FirstOrDefault(c => c.Id == id);
 
+    var resultado = new CategoriaAdicionarDtoValidator().Validate(categoriaDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
     if (categoria == null)
         return Results.NotFound(new BaseResponse("Categoria não encontrada."));
 
@@ -194,6 +200,10 @@ app.MapDelete("categoria/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicionarDto medicamentoDto) =>
 {
+    var resultado = new MedicamentoAdicionarDtoValidator().Validate(medicamentoDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
     context.MedicamentoSet.Add(new Medicamento
     {
         Id = Guid.NewGuid(),
@@ -254,6 +264,11 @@ app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, Medi
 {
     var medicamento = context.MedicamentoSet.FirstOrDefault(m => m.Id == id);
 
+    var resultado = new MedicamentoAtualizarDtoValidator().Validate(medicamentoDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
+
     if (medicamento == null)
         return Results.NotFound(new BaseResponse("Medicamento não encontrado."));
 
@@ -293,6 +308,10 @@ app.MapDelete("medicamento/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionarDto reservaDto) =>
 {
+    var resultado = new ReservaAdicionarDtoValidator().Validate(reservaDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
     context.ReservaSet.Add(new Reserva
     {
         Id = Guid.NewGuid(),
@@ -407,6 +426,10 @@ app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaA
 {
     var reserva = context.ReservaSet.FirstOrDefault(r => r.Id == id);
 
+    var resultado = new ReservaAtualizarDtoValidator().Validate(reservaDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
     if (reserva == null)
         return Results.NotFound(new BaseResponse("Reserva não encontrada."));
 
@@ -444,8 +467,9 @@ app.MapDelete("reserva/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
 app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto usuarioDto) =>
 {
-    if (usuarioDto.Senha != usuarioDto.ConfirmarSenha)
-        return Results.BadRequest(new BaseResponse("As senhas não coincidem."));
+    var resultado = new UsuarioAdicionarDtoValidator().Validate(usuarioDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
 
     context.UsuarioSet.Add(new Usuario
     {
@@ -472,7 +496,8 @@ app.MapGet("usuario/listar", (FarmaciaContext context) =>
         Nome = u.Nome,
         CPF = u.CPF,
         Telefone = u.Telefone,
-        Tipo = u.Tipo
+        Tipo = u.Tipo,
+        Email = u.Email
     }).ToList();
 
     if (usuario.Count == 0)
@@ -512,12 +537,18 @@ app.MapPut("usuario/atualizar/{id}", (FarmaciaContext context, Guid id, UsuarioA
 {
     var usuario = context.UsuarioSet.FirstOrDefault(u => u.Id == id);
 
+    var resultado = new UsuarioAtualizarDtoValidator().Validate(usuarioDto);
+    if (!resultado.IsValid)
+        return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
+
     if (usuario == null)
         return Results.NotFound(new BaseResponse("Usuário não encontrado."));
 
     usuario.Nome = usuarioDto.Nome;
     usuario.CPF = usuarioDto.CPF;
     usuario.Telefone = usuarioDto.Telefone;
+    usuario.Email = usuarioDto.Email;
 
 context.SaveChanges();
 

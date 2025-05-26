@@ -45,7 +45,8 @@ namespace FarmaciaAPI.Infra.Data.Util
                 CPF = usuario.CPF,
                 Id = usuario.Id,
                 Nome = usuario.Nome,
-                Telefone = usuario.Telefone
+                Telefone = usuario.Telefone,
+                Email = usuario.Email
             };
         }
 
