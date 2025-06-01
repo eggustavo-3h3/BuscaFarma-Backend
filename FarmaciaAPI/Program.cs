@@ -329,6 +329,41 @@ app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionarDto r
 //.RequireAuthorization()
 .WithTags("Reserva");
 
+app.MapPost("reserva/adicionar/lote", (FarmaciaContext context, ReservaAdicionarLoteDto reservaLoteDto) =>
+    {
+        List<string> erros = [];
+
+        reservaLoteDto.Reservas.ForEach(reservaDto =>
+        {
+            var resultado = new ReservaAdicionarDtoValidator().Validate(reservaDto);
+            if (!resultado.IsValid)
+                erros.AddRange(resultado.Errors.Select(error => error.ErrorMessage));
+            else
+            {
+                context.ReservaSet.Add(new Reserva
+                {
+                    Id = Guid.NewGuid(),
+                    UsuarioId = reservaDto.UsuarioId,
+                    MedicamentoId = reservaDto.MedicamentoId,
+                    DataReserva = reservaDto.DataReserva,
+                    ImagemReceita = reservaDto.ImagemReceita,
+                    EnumTipoAtendimento = reservaDto.EnumTipoAtendimento
+                });
+            }
+        });
+
+        if (erros.Count > 0)
+            return Results.BadRequest(erros);
+
+        context.SaveChanges();
+        return Results.Created("Created", new BaseResponse("Reservas registradas com sucesso!"));
+    })
+//.RequireAuthorization()
+    .WithTags("Reserva");
+
+
+
+
 app.MapGet("reserva/listar", (FarmaciaContext context) =>
 {
     var reservas = context.ReservaSet
