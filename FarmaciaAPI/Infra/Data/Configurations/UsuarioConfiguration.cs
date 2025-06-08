@@ -36,8 +36,10 @@ namespace FarmaciaAPI.Infra.Data.Configurations
                 .HasMaxLength(200)
                 .IsRequired();
 
-            builder.Property(u => u.ChaveResetSenha)
-                .IsRequired(false);
+            builder.Property(p => p.CodigoResetSenha)
+            .HasMaxLength(6)
+            .HasColumnName("codigo_reset_senha");
+
 
             builder.ToTable("TB_Usuario");
         }

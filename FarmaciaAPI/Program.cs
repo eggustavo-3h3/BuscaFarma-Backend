@@ -128,7 +128,7 @@ app.MapPost("categoria/adicionar", (FarmaciaContext context, CategoriaAdicionarD
 
     return Results.Created("Created", new BaseResponse("Categoria Registrada com Sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapGet("categoria/listar", (FarmaciaContext context) =>
@@ -144,7 +144,7 @@ app.MapGet("categoria/listar", (FarmaciaContext context) =>
 
     return Results.Ok(categoria);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapGet("categoria/{id}", (FarmaciaContext context, Guid id) =>
@@ -156,7 +156,7 @@ app.MapGet("categoria/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(categoria);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapPut("categoria/atualizar/{id}", (FarmaciaContext context, Guid id, CategoriaAdicionarDto categoriaDto) =>
@@ -176,7 +176,7 @@ app.MapPut("categoria/atualizar/{id}", (FarmaciaContext context, Guid id, Catego
 
     return Results.Ok(new BaseResponse("Categoria atualizada com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Categoria");
 
 app.MapDelete("categoria/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -191,7 +191,7 @@ app.MapDelete("categoria/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Categoria excluída com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Categoria");
 
 #endregion
@@ -221,7 +221,7 @@ app.MapPost("medicamento/adicionar", (FarmaciaContext context, MedicamentoAdicio
 
     return Results.Created("Created", new BaseResponse("Medicamento Registrado com Sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapGet("medicamento/listar", (FarmaciaContext context) =>
@@ -245,7 +245,7 @@ app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 
     return Results.Ok(medicamentos);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapGet("medicamento/{id}", (FarmaciaContext context, Guid id) =>
@@ -257,7 +257,7 @@ app.MapGet("medicamento/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(medicamento);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, MedicamentoAtualizarDto medicamentoDto) =>
@@ -284,7 +284,7 @@ app.MapPut("medicamento/atualizar/{id}", (FarmaciaContext context, Guid id, Medi
 
     return Results.Ok(new BaseResponse("Medicamento atualizado com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Medicamentos");
 
 app.MapDelete("medicamento/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -299,7 +299,7 @@ app.MapDelete("medicamento/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Medicamento excluído com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Medicamentos");
 
 #endregion
@@ -326,7 +326,7 @@ app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionarDto r
 
     return Results.Created("Created", new BaseResponse("Reserva registrada com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Reserva");
 
 app.MapGet("reserva/listar", (FarmaciaContext context) =>
@@ -356,7 +356,7 @@ app.MapGet("reserva/listar", (FarmaciaContext context) =>
 
     return Results.Ok(reservas);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Reserva");
 
 app.MapGet("reserva/{id}", (FarmaciaContext context, Guid id) =>
@@ -387,7 +387,7 @@ app.MapGet("reserva/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(reservas);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Reserva");
 
 app.MapGet("reserva/usuario/{usuarioId}", (FarmaciaContext context, Guid usuarioId) =>
@@ -418,7 +418,7 @@ app.MapGet("reserva/usuario/{usuarioId}", (FarmaciaContext context, Guid usuario
 
     return Results.Ok(reservas);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Reserva");
 
 
@@ -443,7 +443,7 @@ app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaA
 
     return Results.Ok(new BaseResponse("Reserva atualizada com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Reserva");
 
 app.MapDelete("reserva/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -458,7 +458,7 @@ app.MapDelete("reserva/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Reserva excluída com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Reserva");
 
 #endregion
@@ -485,7 +485,7 @@ app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto u
 
     return Results.Created("Created", new BaseResponse("Usuário registrado com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Usuario");
 
 app.MapGet("usuario/listar", (FarmaciaContext context) =>
@@ -506,7 +506,7 @@ app.MapGet("usuario/listar", (FarmaciaContext context) =>
     return Results.Ok(usuario);
 
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Usuario");
 
 app.MapGet("usuario/id/{id}", (FarmaciaContext context, Guid id) =>
@@ -518,7 +518,7 @@ app.MapGet("usuario/id/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(usuario);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Usuario");
 
 app.MapGet("usuario/cpf/{cpf}", (FarmaciaContext context, string cpf) =>
@@ -530,7 +530,7 @@ app.MapGet("usuario/cpf/{cpf}", (FarmaciaContext context, string cpf) =>
 
     return Results.Ok(usuario);
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Usuario");
 
 app.MapPut("usuario/atualizar/{id}", (FarmaciaContext context, Guid id, UsuarioAtualizarDto usuarioDto) =>
@@ -554,7 +554,7 @@ context.SaveChanges();
 
     return Results.Ok(new BaseResponse("Usuário atualizado com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Usuario");
 
 app.MapDelete("usuario/excluir/{id}", (FarmaciaContext context, Guid id) =>
@@ -569,7 +569,7 @@ app.MapDelete("usuario/excluir/{id}", (FarmaciaContext context, Guid id) =>
 
     return Results.Ok(new BaseResponse("Usuário excluído com sucesso!"));
 })
-//.RequireAuthorization()
+.RequireAuthorization()
 .WithTags("Usuario");
 
 #endregion
@@ -619,18 +619,21 @@ app.MapPost("gerar-chave-reset-senha", (FarmaciaContext context, GerarResetSenha
 
     if (usuario is not null)
     {
-        usuario.ChaveResetSenha = Guid.NewGuid();
+        var codigo = new Random().Next(100000, 999999).ToString();
+        usuario.CodigoResetSenha = codigo;
         context.UsuarioSet.Update(usuario);
         context.SaveChanges();
 
         var emailService = new EmailService();
-        var enviarEmailResponse = emailService.EnviarEmail(gerarResetSenhaDto.Email, "Reset de Senha", $"https://url-front/reset-senha/{usuario.ChaveResetSenha}", true);
+        var corpoEmail = $"Seu código para redefinir a senha é: <b>{codigo}</b>";
+        var enviarEmailResponse = emailService.EnviarEmail(gerarResetSenhaDto.Email, "Código de Redefinição de Senha", corpoEmail, true);
         if (!enviarEmailResponse.Sucesso)
             return Results.BadRequest(new BaseResponse("Erro ao enviar o e-mail: " + enviarEmailResponse.Mensagem));
     }
 
-    return Results.Ok(new BaseResponse("Se o e-mail informado estiver correto, você receberá as instruções por e-mail."));
+    return Results.Ok(new BaseResponse("Se o e-mail informado estiver correto, você receberá o código por e-mail."));
 }).WithTags("Segurança");
+
 
 app.MapPut("resetar-senha", (FarmaciaContext context, ResetSenhaDto resetSenhaDto) =>
 {
@@ -638,18 +641,22 @@ app.MapPut("resetar-senha", (FarmaciaContext context, ResetSenhaDto resetSenhaDt
     if (!resultado.IsValid)
         return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
 
-    var startup = context.UsuarioSet.FirstOrDefault(p => p.ChaveResetSenha == resetSenhaDto.ChaveResetSenha);
+    var usuario = context.UsuarioSet.FirstOrDefault(p =>
+        p.Email == resetSenhaDto.Email &&
+        p.CodigoResetSenha == resetSenhaDto.Codigo);
 
-    if (startup is null)
-        return Results.BadRequest(new BaseResponse("Chave de reset de senha inválida."));
+    if (usuario is null)
+        return Results.BadRequest(new BaseResponse("Código inválido ou expirado."));
 
-    startup.Senha = resetSenhaDto.NovaSenha.EncryptPassword();
-    startup.ChaveResetSenha = null;
-    context.UsuarioSet.Update(startup);
+    usuario.Senha = resetSenhaDto.NovaSenha.EncryptPassword();
+    usuario.CodigoResetSenha = null;
+
+    context.UsuarioSet.Update(usuario);
     context.SaveChanges();
 
     return Results.Ok(new BaseResponse("Senha alterada com sucesso."));
 }).WithTags("Segurança");
+
 
 app.MapPut("alterar-senha", (FarmaciaContext context, ClaimsPrincipal claims, AlterarSenhaDto alterarSenhaDto) =>
 {
