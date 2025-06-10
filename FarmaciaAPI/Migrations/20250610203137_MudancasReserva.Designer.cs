@@ -4,6 +4,7 @@ using FarmaciaAPI.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FarmaciaAPI.Migrations
 {
     [DbContext(typeof(FarmaciaContext))]
-    partial class FarmaciaContextModelSnapshot : ModelSnapshot
+    [Migration("20250610203137_MudancasReserva")]
+    partial class MudancasReserva
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,7 +117,6 @@ namespace FarmaciaAPI.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DataRetirada")
-                        .IsRequired()
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("EnumTipoAtendimento")

@@ -20,6 +20,7 @@ using FarmaciaAPI.Infra.Email;
 using FarmaciaAPI.Domain.Validators.Medicamento;
 using FarmaciaAPI.Domain.Validators.Reserva;
 using FarmaciaAPI.Domain.Validators.Usuario;
+using FarmaciaAPI.Domain.Enumerators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -332,7 +333,10 @@ app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionarDto r
         MedicamentoId = reservaDto.MedicamentoId,
         DataReserva = reservaDto.DataReserva,
         ImagemReceita = reservaDto.ImagemReceita,
-        EnumTipoAtendimento = reservaDto.EnumTipoAtendimento
+        EnumTipoAtendimento = reservaDto.EnumTipoAtendimento,
+        DataRetirada = reservaDto.DataRetirada,
+        RetiranteNome = reservaDto.RetiranteNome,
+        RetiranteCpf = reservaDto.RetiranteCpf,
     });
 
     context.SaveChanges();
@@ -508,6 +512,9 @@ app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaA
     reserva.DataReserva = reservaDto.DataReserva;
     reserva.ImagemReceita = reservaDto.ImagemReceita;
     reserva.EnumTipoAtendimento = reservaDto.EnumTipoAtendimento;
+    reserva.DataRetirada = reservaDto.DataRetirada;
+    reserva.RetiranteNome = reservaDto.RetiranteNome;
+    reserva.RetiranteCpf = reservaDto.RetiranteCpf;
 
     context.SaveChanges();
 

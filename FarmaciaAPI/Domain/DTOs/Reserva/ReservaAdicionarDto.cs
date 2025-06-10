@@ -10,5 +10,8 @@ namespace FarmaciaAPI.Domain.DTOs.Reserva
         public string ImagemReceita { get; set; } = string.Empty;
         public EnumTipoAtendimento EnumTipoAtendimento { get; set; } = EnumTipoAtendimento.NaoAtendida;
         public EnumStatusReserva Status { get; set; }
+        public DateTime? DataRetirada { get; set; }
+        public string RetiranteNome { get; set; }
+        public string RetiranteCpf { get; set; }
     }
 }

@@ -24,6 +24,9 @@ namespace FarmaciaAPI.Infra.Data.Configurations
                 //.HasDefaultValue(EnumTipoAtendimento.NaoAtendida)
                 .IsRequired();
 
+            builder.Property(r => r.DataRetirada)
+                .IsRequired();
+
             builder.Property(r => r.RetiranteNome)
                 .HasMaxLength(100)
                 .IsRequired(false);
