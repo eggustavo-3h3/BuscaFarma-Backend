@@ -1,5 +1,4 @@
 ﻿using FarmaciaAPI.Domain.Enumerators;
-using Microsoft.EntityFrameworkCore;
 
 namespace FarmaciaAPI.Domain.Entities
 {

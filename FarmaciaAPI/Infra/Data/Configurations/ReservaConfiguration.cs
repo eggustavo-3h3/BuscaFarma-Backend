@@ -1,5 +1,4 @@
 ﻿using FarmaciaAPI.Domain.Entities;
-using FarmaciaAPI.Domain.Enumerators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

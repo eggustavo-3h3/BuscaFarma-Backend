@@ -7,10 +7,8 @@ using FarmaciaAPI.Domain.DTOs.Reserva;
 using FarmaciaAPI.Domain.DTOs.ResetSenha;
 using FarmaciaAPI.Domain.DTOs.Usuario;
 using FarmaciaAPI.Domain.Entities;
-using FarmaciaAPI.Domain.Enumerators;
 using FarmaciaAPI.Domain.Extensions;
 using FarmaciaAPI.Infra.Data.Context;
-using FarmaciaAPI.Infra.Data.Util;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -250,12 +248,27 @@ app.MapGet("medicamento/listar", (FarmaciaContext context) =>
 
 app.MapGet("medicamento/{id}", (FarmaciaContext context, Guid id) =>
 {
-    var medicamento = SelectUtil.ObterMedicamento(context, id);
+
+    var medicamento = context.MedicamentoSet.Include(M => M.Categoria).FirstOrDefault(m => m.Id == id);
 
     if (medicamento == null)
         return Results.NotFound(new BaseResponse("Medicamento não encontrado."));
 
-    return Results.Ok(medicamento);
+    var medicamentoDto = new MedicamentoObterDto
+    {
+        Id = medicamento.Id,
+        Descricao = medicamento.Descricao,
+        NomeComercial = medicamento.NomeComercial,
+        NomeQuimico = medicamento.NomeQuimico,
+        TipoMedicamento = medicamento.TipoMedicamento,
+        Quantidade = medicamento.Quantidade,
+        UnidadeMedida = medicamento.UnidadeMedida,
+        Imagem = medicamento.Imagem,
+        CategoriaId = medicamento.CategoriaId,
+        CategoriaDescricao = medicamento.Categoria.Descricao
+    };
+    
+    return Results.Ok(medicamentoDto);
 })
 .RequireAuthorization()
 .WithTags("Medicamentos");
@@ -333,7 +346,7 @@ app.MapGet("reserva/listar", (FarmaciaContext context) =>
 {
     var reservas = context.ReservaSet
     .Include(p => p.Usuario)
-    .Include(p => p.Medicamento)
+    .Include(p => p.Medicamento).ThenInclude(c => c.Categoria)
     .ToList()
     .Select(p => new ReservaListarDto
     {
@@ -347,8 +360,27 @@ app.MapGet("reserva/listar", (FarmaciaContext context) =>
         DataRetirada = p.DataRetirada,
         RetiranteNome = p.RetiranteNome,
         RetiranteCpf = p.RetiranteCpf,
-        Usuario = SelectUtil.ObterUsuario(context, p.UsuarioId),
-        Medicamento = SelectUtil.ObterMedicamento(context, p.MedicamentoId)
+        Usuario = new UsuarioObterDto
+        {
+            CPF = p.Usuario.CPF,
+            Id = p.Usuario.Id,
+            Nome = p.Usuario.Nome,
+            Telefone = p.Usuario.Telefone,
+            Email = p.Usuario.Email
+        },
+        Medicamento = new MedicamentoObterDto
+        {
+            Id = p.Medicamento.Id,
+            Descricao = p.Medicamento.Descricao,
+            NomeComercial = p.Medicamento.NomeComercial,
+            NomeQuimico = p.Medicamento.NomeQuimico,
+            TipoMedicamento = p.Medicamento.TipoMedicamento,
+            Quantidade = p.Medicamento.Quantidade,
+            UnidadeMedida = p.Medicamento.UnidadeMedida,
+            Imagem = p.Medicamento.Imagem,
+            CategoriaId = p.Medicamento.CategoriaId,
+            CategoriaDescricao = p.Medicamento.Categoria.Descricao
+        }
     }).ToList();
 
     if (reservas.Count == 0)
@@ -363,7 +395,7 @@ app.MapGet("reserva/{id}", (FarmaciaContext context, Guid id) =>
 {
     var reservas = context.ReservaSet
     .Include(r => r.Usuario)
-    .Include(r => r.Medicamento)
+    .Include(r => r.Medicamento).ThenInclude(c => c.Categoria)
     .ToList()
     .Where(r => r.Id == id)
     .Select(r => new ReservaChamarDto
@@ -378,8 +410,27 @@ app.MapGet("reserva/{id}", (FarmaciaContext context, Guid id) =>
         DataRetirada = r.DataRetirada,
         RetiranteNome = r.RetiranteNome,
         RetiranteCpf = r.RetiranteCpf,
-        Usuario = SelectUtil.ObterUsuario(context, r.UsuarioId),
-        Medicamento = SelectUtil.ObterMedicamento(context, r.MedicamentoId)
+        Usuario = new UsuarioObterDto
+        {
+            CPF = r.Usuario.CPF,
+            Id = r.Usuario.Id,
+            Nome = r.Usuario.Nome,
+            Telefone = r.Usuario.Telefone,
+            Email = r.Usuario.Email
+        },
+        Medicamento = new MedicamentoObterDto
+        {
+            Id = r.Medicamento.Id,
+            Descricao = r.Medicamento.Descricao,
+            NomeComercial = r.Medicamento.NomeComercial,
+            NomeQuimico = r.Medicamento.NomeQuimico,
+            TipoMedicamento = r.Medicamento.TipoMedicamento,
+            Quantidade = r.Medicamento.Quantidade,
+            UnidadeMedida = r.Medicamento.UnidadeMedida,
+            Imagem = r.Medicamento.Imagem,
+            CategoriaId = r.Medicamento.CategoriaId,
+            CategoriaDescricao = r.Medicamento.Categoria.Descricao
+        }
     }).ToList();
 
     if (reservas.Count == 0)
@@ -394,7 +445,7 @@ app.MapGet("reserva/usuario/{usuarioId}", (FarmaciaContext context, Guid usuario
 {
     var reservas = context.ReservaSet
     .Include(r => r.Usuario)
-    .Include(r => r.Medicamento)
+    .Include(r => r.Medicamento).ThenInclude(c => c.Categoria)
     .ToList()
     .Where(r => r.UsuarioId == usuarioId)
     .Select(r => new ReservaChamarDto
@@ -409,8 +460,27 @@ app.MapGet("reserva/usuario/{usuarioId}", (FarmaciaContext context, Guid usuario
         DataRetirada = r.DataRetirada,
         RetiranteNome = r.RetiranteNome,
         RetiranteCpf = r.RetiranteCpf,
-        Usuario = SelectUtil.ObterUsuario(context, r.UsuarioId),
-        Medicamento = SelectUtil.ObterMedicamento(context, r.MedicamentoId)
+        Usuario = new UsuarioObterDto
+        {
+            CPF = r.Usuario.CPF,
+            Id = r.Usuario.Id,
+            Nome = r.Usuario.Nome,
+            Telefone = r.Usuario.Telefone,
+            Email = r.Usuario.Email
+        },
+        Medicamento = new MedicamentoObterDto
+        {
+            Id = r.Medicamento.Id,
+            Descricao = r.Medicamento.Descricao,
+            NomeComercial = r.Medicamento.NomeComercial,
+            NomeQuimico = r.Medicamento.NomeQuimico,
+            TipoMedicamento = r.Medicamento.TipoMedicamento,
+            Quantidade = r.Medicamento.Quantidade,
+            UnidadeMedida = r.Medicamento.UnidadeMedida,
+            Imagem = r.Medicamento.Imagem,
+            CategoriaId = r.Medicamento.CategoriaId,
+            CategoriaDescricao = r.Medicamento.Categoria.Descricao
+        }
     }).ToList();
 
     if (reservas.Count == 0)
