@@ -579,9 +579,7 @@ app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto u
     context.SaveChanges();
 
     return Results.Created("Created", new BaseResponse("Usuário registrado com sucesso!"));
-})
-.RequireAuthorization()
-.WithTags("Usuario");
+}).WithTags("Usuario");
 
 app.MapGet("usuario/listar", (FarmaciaContext context) =>
 {
