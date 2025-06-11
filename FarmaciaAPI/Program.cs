@@ -21,6 +21,7 @@ using FarmaciaAPI.Domain.Validators.Medicamento;
 using FarmaciaAPI.Domain.Validators.Reserva;
 using FarmaciaAPI.Domain.Validators.Usuario;
 using FarmaciaAPI.Domain.Enumerators;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -326,6 +327,14 @@ app.MapPost("reserva/adicionar", (FarmaciaContext context, ReservaAdicionarDto r
     if (!resultado.IsValid)
         return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
 
+    var usuario = context.UsuarioSet.FirstOrDefault(u => u.Id == reservaDto.UsuarioId);
+    if (usuario is null)
+        return Results.BadRequest("Usuário não Localizado.");
+
+    var medicamento = context.MedicamentoSet.FirstOrDefault(u => u.Id == reservaDto.MedicamentoId);
+    if (medicamento is null)
+        return Results.BadRequest("Medicamento não Localizado.");
+
     context.ReservaSet.Add(new Reserva
     {
         Id = Guid.NewGuid(),
@@ -565,6 +574,10 @@ app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto u
     var resultado = new UsuarioAdicionarDtoValidator().Validate(usuarioDto);
     if (!resultado.IsValid)
         return Results.BadRequest(resultado.Errors.Select(error => error.ErrorMessage));
+
+    var cpfExistente = context.UsuarioSet.Any(p => p.CPF == usuarioDto.CPF);
+    if (cpfExistente)
+        return Results.BadRequest("CPF Já Cadastrado.");
 
     context.UsuarioSet.Add(new Usuario
     {
