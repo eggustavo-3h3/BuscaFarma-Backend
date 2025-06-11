@@ -13,7 +13,7 @@ namespace FarmaciaAPI.Infra.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            const string conexao = "server=mysql.tccnapratica.com.br;database=tccnapratica10;port=3306;uid=tccnapratica10;password=Etec3h3";
+            const string conexao = "server=mysql.tccnapratica.com.br;database=tccnapratica10;port=3306;uid=tccnapratica10;password=Etec3h3;AllowZeroDateTime=True;ConvertZeroDateTime=True";
             optionsBuilder.UseMySql(conexao, ServerVersion.AutoDetect(conexao));
             base.OnConfiguring(optionsBuilder);
         }

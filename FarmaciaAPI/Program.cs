@@ -495,6 +495,24 @@ app.MapGet("reserva/usuario/{usuarioId}", (FarmaciaContext context, Guid usuario
 .RequireAuthorization()
 .WithTags("Reserva");
 
+app.MapPut("reserva/atender/{id}", (FarmaciaContext context, Guid id, ReservaAtenderDto reservaAtenderDto) =>
+    {
+        var reserva = context.ReservaSet.FirstOrDefault(r => r.Id == id);
+
+        if (reserva == null)
+            return Results.NotFound(new BaseResponse("Reserva não encontrada."));
+
+        reserva.EnumTipoAtendimento = reservaAtenderDto.EnumTipoAtendimento;
+        reserva.Status = reservaAtenderDto.Status;
+        reserva.RetiranteNome = reservaAtenderDto.RetiranteNome;
+        reserva.RetiranteCpf = reservaAtenderDto.RetiranteCpf;
+
+        context.SaveChanges();
+
+        return Results.Ok(new BaseResponse("Registro de Atendimento realizado com sucesso!"));
+    })
+    .RequireAuthorization()
+    .WithTags("Reserva");
 
 app.MapPut("reserva/atualizar/{id}", (FarmaciaContext context, Guid id, ReservaAtualizarDto reservaDto) =>
 {
