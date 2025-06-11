@@ -577,7 +577,7 @@ app.MapPost("usuario/adicionar", (FarmaciaContext context, UsuarioAdicionarDto u
 
     var cpfExistente = context.UsuarioSet.Any(p => p.CPF == usuarioDto.CPF);
     if (cpfExistente)
-        return Results.BadRequest("CPF Já Cadastrado.");
+        return Results.BadRequest(new BaseResponse("CPF Já Cadastrado."));
 
     context.UsuarioSet.Add(new Usuario
     {
